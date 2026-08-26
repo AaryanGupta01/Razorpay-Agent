@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document Intelligence</title>
+    <title>Razorpay Agentic Commerce</title>
     <style>
-       
-        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,600&family=Inter:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Inter:wght@400;500;600&display=swap');
 
-        /* 1. Light-Themed Paper Background */
+        /* 1. Razorpay Dark FinTech Theme */
         :root {
-            --paper-bg: #fdfbf7; 
-            --text-slate: #7a8288;
-            --highlight-teal: #199573; 
-            --sub-teal: #87c5b5; 
+            --rzp-bg-dark: #070B19; 
+            --rzp-bg-light: #111A3A;
+            --rzp-primary: #3366FF; /* Razorpay Blue */
+            --rzp-accent: #00E676; /* Success Green */
+            --text-main: #F8FAFC;
+            --text-slate: #94A3B8;
         }
 
         html, body {
@@ -23,79 +24,92 @@
             height: 100%;
             overflow: hidden;
             font-family: 'Inter', sans-serif;
-            background-color: var(--paper-bg);
-            background-image: repeating-linear-gradient(transparent, transparent 39px, rgba(0,0,0,0.02) 40px);
+            background-color: var(--rzp-bg-dark);
+            /* High-tech radial gradient background */
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(51, 102, 255, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(0, 230, 118, 0.1), transparent 25%);
         }
 
-        /* 2. Giant Background Typewriter Layout */
+        /* 2. Sleek Hero Layout */
         #hero-background {
             position: fixed;
-            top: 42%;
+            top: 40%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 100%;
             text-align: center;
-            z-index: 0; /* Sits behind the Flowise chat */
-            pointer-events: none; /* Allows clicks to pass through to Flowise */
+            z-index: 0;
+            pointer-events: none;
             user-select: none;
         }
 
-        .hero-line-1 {
-            font-family: 'Lora', serif;
-            font-size: 5vw; /* Scales with screen size */
+        .hero-badge {
+            display: inline-block;
+            background: rgba(51, 102, 255, 0.1);
+            border: 1px solid rgba(51, 102, 255, 0.3);
+            color: var(--rzp-primary);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text-slate);
-            margin-bottom: -1vw; /* Pulls the second line closer */
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(51, 102, 255, 0.2);
         }
 
-        .hero-line-2 {
-            font-family: 'Lora', serif;
-            font-size: 5vw;
-            font-weight: 600;
-            color: var(--text-slate);
+        .hero-line-1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 4.5vw;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.1;
+            letter-spacing: -1px;
         }
 
         .typewriter-text {
-            color: var(--highlight-teal);
-            font-style: italic;
+            color: var(--rzp-primary);
+            background: -webkit-linear-gradient(45deg, #3366FF, #00D4FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .cursor {
-            color: var(--highlight-teal);
+            color: var(--rzp-primary);
             animation: blink 1s step-end infinite;
         }
 
         .language-row {
             margin-top: 30px;
-            font-size: 1.1vw;
-            font-weight: 600;
-            letter-spacing: 5px;
-            color: var(--sub-teal);
+            font-size: 1vw;
+            font-weight: 500;
+            letter-spacing: 4px;
+            color: var(--text-slate);
             text-transform: uppercase;
-            font-family: 'Inter', sans-serif;
         }
 
-        /* 3. Gradient Mic Component */
+        /* 3. Modern Glassmorphic Mic Component */
         #mic-container {
             position: fixed;
-            bottom: 35px;
+            bottom: 40px;
             right: 80px; 
             z-index: 9999;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
         }
 
         #mic-btn {
             border-radius: 50%;
-            width: 56px;
-            height: 56px;
+            width: 60px;
+            height: 60px;
             font-size: 24px;
             cursor: pointer;
-            border: none;
-            background: linear-gradient(135deg, #199573, #3a5c78);
+            border: 1px solid rgba(255,255,255,0.1);
+            background: linear-gradient(135deg, var(--rzp-primary), #1A368F);
             color: white;
-            box-shadow: 0 8px 24px rgba(25, 149, 115, 0.3);
+            box-shadow: 0 8px 32px rgba(51, 102, 255, 0.4);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             display: flex;
             justify-content: center;
@@ -104,8 +118,8 @@
         }
 
         #mic-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 28px rgba(25, 149, 115, 0.4);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 12px 40px rgba(51, 102, 255, 0.6);
         }
 
         #mic-btn:active {
@@ -113,23 +127,25 @@
         }
 
         #mic-btn.recording {
-            background: linear-gradient(135deg, #ff4b4b, #d91818); 
-            animation: pulse-red 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 8px 24px rgba(255, 75, 75, 0.4);
+            background: linear-gradient(135deg, #FF3366, #D91848); 
+            border-color: rgba(255, 51, 102, 0.5);
+            animation: pulse-red 1.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(255, 51, 102, 0.5);
         }
 
-        /* 4. Status Pill */
+        /* 4. Glassmorphic Status Pill */
         #mic-status {
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-slate);
+            background: rgba(17, 26, 58, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
             display: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.05);
             animation: fadeIn 0.3s ease;
         }
 
@@ -140,9 +156,9 @@
         }
 
         @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 75, 75, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); }
+            0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.6); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 51, 102, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); }
         }
 
         @keyframes blink {
@@ -150,7 +166,6 @@
             50% { opacity: 0; }
         }
 
-        /* Ensure Flowise container stays above background but remains transparent */
         flowise-fullpagechat {
             position: relative;
             z-index: 10;
@@ -159,23 +174,21 @@
 </head>
 <body>
     
-    <!-- Giant Background Watermark with Typewriter -->
     <div id="hero-background">
-        <div class="hero-line-1">Talk with your</div>
-        <div class="hero-line-2">documents in <span class="typewriter-text" id="typewriter"></span><span class="cursor">|</span></div>
+        <div class="hero-badge">Agentic Support Pipeline</div>
+        <div class="hero-line-1">Resolve payments &</div>
+        <div class="hero-line-1">analyze reports in <span class="typewriter-text" id="typewriter"></span><span class="cursor">|</span></div>
         <div class="language-row">ENGLISH &middot; हिंदी &middot; मराठी &middot; தமிழ் &middot; తెలుగు &middot; বাংলা</div>
     </div>
     
-    <!-- Flowise Component -->
     <flowise-fullpagechat></flowise-fullpagechat>
 
-    <!-- Floating Mic Component -->
     <div id="mic-container">
         <span id="mic-status"></span>
         <button id="mic-btn" title="Click to dictate">🎙️</button>
     </div>
 
-    <!-- Typewriter Animation Logic -->
+    <!-- Typewriter Logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const languages = ["English", "Hindi", "Marathi", "Punjabi", "Gujarati", "Tamil", "Telugu", "Bengali"];
@@ -192,31 +205,29 @@
                 if (isDeleting) {
                     typewriterElement.textContent = currentLanguage.substring(0, charIndex - 1);
                     charIndex--;
-                    typeSpeed = 50; 
+                    typeSpeed = 40; 
                 } else {
                     typewriterElement.textContent = currentLanguage.substring(0, charIndex + 1);
                     charIndex++;
-                    typeSpeed = 120; 
+                    typeSpeed = 100; 
                 }
 
                 if (!isDeleting && charIndex === currentLanguage.length) {
                     isDeleting = true;
-                    typeSpeed = 1800; // Pause longer when word is complete
+                    typeSpeed = 2000; 
                 } 
                 else if (isDeleting && charIndex === 0) {
                     isDeleting = false;
                     languageIndex = (languageIndex + 1) % languages.length; 
-                    typeSpeed = 500; 
+                    typeSpeed = 400; 
                 }
-
                 setTimeout(typeWriter, typeSpeed);
             }
-
             setTimeout(typeWriter, 800);
         });
     </script>
 
-    <!-- Flowise Initialization -->
+    <!-- Flowise Initialization (Updated for Dark FinTech Theme) -->
     <script type="module">
         import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
 
@@ -228,7 +239,7 @@
                     apiHost: config.apiHost,       
                     theme: {
                         customCSS: `
-                            /* Completely kill the blue background and shadow on the header */
+                            /* Hide default header */
                             .bg-blue-500, header, .flex.w-full.h-16 {
                                 background-color: transparent !important;
                                 background: transparent !important;
@@ -236,16 +247,14 @@
                                 border: none !important;
                             }
                             
-                            /* Turn the white refresh/clear icon into your teal green */
+                            /* Update icons to Razorpay Blue */
                             button svg, svg.text-white {
-                                color: #199573 !important;
-                                stroke: #199573 !important;
+                                color: #3366FF !important;
+                                stroke: #3366FF !important;
                             }
                             
-                            /* AGGRESSIVELY HIDE the entire "Powered by Flowise" sentence */
-                            span:has(a[href*="flowiseai"]), 
-                            .text-center.text-xs, 
-                            span.text-xs {
+                            /* Hide Flowise branding */
+                            span:has(a[href*="flowiseai"]), .text-center.text-xs, span.text-xs {
                                 display: none !important;
                                 color: transparent !important;
                                 visibility: hidden !important;
@@ -254,33 +263,40 @@
                                 margin: 0 !important;
                                 padding: 0 !important;
                             }
+                            
+                            /* Make the chat area slightly transparent to see the hero background */
+                            .flex.flex-col.flex-1.overflow-y-auto {
+                                background-color: rgba(7, 11, 25, 0.6) !important;
+                                backdrop-filter: blur(8px) !important;
+                            }
                         `,
                         chatWindow: {
+                            clearChatOnReload: true,
                             titleBackgroundColor: "transparent", 
                             backgroundColor: "transparent",      
-                            titleColor: "#333333",
+                            titleColor: "#FFFFFF",
                             showPoweredBy: false, 
-                            welcomeMessage: "Upload a document to begin analysis. \n\nTap the microphone to speak in English or your regional language.",
+                            welcomeMessage: "Welcome to the Razorpay Support Agent.\n\nUpload your monthly MDR or Settlement reports, or tap the microphone to instantly diagnose a failed payment ID.",
                             botMessage: {
-                                backgroundColor: "#ffffff",
-                                textColor: "#333333",
+                                backgroundColor: "#111A3A",
+                                textColor: "#F8FAFC",
                                 showAvatar: true,
                             },
                             userMessage: {
-                                backgroundColor: "#199573", 
-                                textColor: "#ffffff",
+                                backgroundColor: "#3366FF", 
+                                textColor: "#FFFFFF",
                                 showAvatar: false,
                             },
                             textInput: {
-                                placeholder: "Message or dictate...",
-                                backgroundColor: "#ffffff",
-                                textColor: "#333333",
-                                sendButtonColor: "#199573",
+                                placeholder: "Ask about a payment or upload a document...",
+                                backgroundColor: "#111A3A",
+                                textColor: "#F8FAFC",
+                                sendButtonColor: "#3366FF",
                             },
                             uploads: {
                                 allowFiles: true,
-                                maxFileSize: 2,
-                                accept: ".pdf,.txt,.docx,.csv"
+                                maxFileSize: 5,
+                                accept: ".pdf,.txt,.csv"
                             }
                         }
                     }
@@ -291,7 +307,7 @@
             .catch(err => console.error("Failed to load bot config:", err));
     </script>
 
-    <!-- Microphone Recording and STT Logic -->
+    <!-- Keep your exact Microphone STT Script here -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const micBtn = document.getElementById('mic-btn');
@@ -428,7 +444,7 @@
             }
         });
     </script>
-    <div style="position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #7a8288; z-index: 9999; font-family: 'Inter', sans-serif; opacity: 0.7;">
+    <div style="position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #475569; z-index: 9999; font-family: 'Inter', sans-serif; letter-spacing: 0.5px;">
         Designed & Developed by Aaryan Gupta
     </div>
 </body>
