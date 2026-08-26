@@ -170,6 +170,63 @@
             position: relative;
             z-index: 10;
         }
+
+        /* Footer CSS */
+        .footer-text {
+            position: fixed; 
+            bottom: 15px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 12px; 
+            color: #475569; 
+            z-index: 9999; 
+            font-family: 'Inter', sans-serif; 
+            letter-spacing: 0.5px;
+            pointer-events: none;
+        }
+
+        /* --- Mobile Responsiveness (Centered Typewriter) --- */
+        @media (max-width: 768px) {
+            /* 1. Center the text safely below the welcome message */
+            #hero-background {
+                top: 50%; /* Dead center of the phone screen */
+                transform: translate(-50%, -50%);
+                width: 90%; /* Gives the text a little breathing room on the edges */
+            }
+            
+            .hero-badge {
+                display: none; /* Hide the badge so the design isn't too tall */
+            }
+
+            .hero-line-1 {
+                font-size: 7.5vw; /* Perfectly scaled for phone width */
+                line-height: 1.2;
+                margin-bottom: 8px;
+            }
+
+            .language-row {
+                font-size: 3vw;
+                margin-top: 15px;
+                letter-spacing: 2px;
+            }
+
+            /* 2. Move Mic Button safely above the Flowise input box */
+            #mic-container {
+                bottom: 85px; 
+                right: 20px;  
+            }
+            
+            #mic-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+
+            /* 3. Hide the footer on mobile to keep the chat unobstructed */
+            .footer-text {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -443,7 +500,7 @@
             }
         });
     </script>
-    <div style="position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #475569; z-index: 9999; font-family: 'Inter', sans-serif; letter-spacing: 0.5px;">
+    <div class="footer-text">
         Designed & Developed by Aaryan Gupta
     </div>
 </body>
