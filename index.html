@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Intelligence</title>
+    <style>
+       
+        @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;1,600&family=Inter:wght@400;500;600&display=swap');
+
+        /* 1. Light-Themed Paper Background */
+        :root {
+            --paper-bg: #fdfbf7; 
+            --text-slate: #7a8288;
+            --highlight-teal: #199573; 
+            --sub-teal: #87c5b5; 
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--paper-bg);
+            background-image: repeating-linear-gradient(transparent, transparent 39px, rgba(0,0,0,0.02) 40px);
+        }
+
+        /* 2. Giant Background Typewriter Layout */
+        #hero-background {
+            position: fixed;
+            top: 42%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            z-index: 0; /* Sits behind the Flowise chat */
+            pointer-events: none; /* Allows clicks to pass through to Flowise */
+            user-select: none;
+        }
+
+        .hero-line-1 {
+            font-family: 'Lora', serif;
+            font-size: 5vw; /* Scales with screen size */
+            font-weight: 600;
+            color: var(--text-slate);
+            margin-bottom: -1vw; /* Pulls the second line closer */
+        }
+
+        .hero-line-2 {
+            font-family: 'Lora', serif;
+            font-size: 5vw;
+            font-weight: 600;
+            color: var(--text-slate);
+        }
+
+        .typewriter-text {
+            color: var(--highlight-teal);
+            font-style: italic;
+        }
+
+        .cursor {
+            color: var(--highlight-teal);
+            animation: blink 1s step-end infinite;
+        }
+
+        .language-row {
+            margin-top: 30px;
+            font-size: 1.1vw;
+            font-weight: 600;
+            letter-spacing: 5px;
+            color: var(--sub-teal);
+            text-transform: uppercase;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* 3. Gradient Mic Component */
+        #mic-container {
+            position: fixed;
+            bottom: 35px;
+            right: 80px; 
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #mic-btn {
+            border-radius: 50%;
+            width: 56px;
+            height: 56px;
+            font-size: 24px;
+            cursor: pointer;
+            border: none;
+            background: linear-gradient(135deg, #199573, #3a5c78);
+            color: white;
+            box-shadow: 0 8px 24px rgba(25, 149, 115, 0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            outline: none;
+        }
+
+        #mic-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 28px rgba(25, 149, 115, 0.4);
+        }
+
+        #mic-btn:active {
+            transform: scale(0.95);
+        }
+
+        #mic-btn.recording {
+            background: linear-gradient(135deg, #ff4b4b, #d91818); 
+            animation: pulse-red 2s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 24px rgba(255, 75, 75, 0.4);
+        }
+
+        /* 4. Status Pill */
+        #mic-status {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-slate);
+            display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05);
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 75, 75, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 75, 75, 0); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Ensure Flowise container stays above background but remains transparent */
+        flowise-fullpagechat {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Giant Background Watermark with Typewriter -->
+    <div id="hero-background">
+        <div class="hero-line-1">Talk with your</div>
+        <div class="hero-line-2">documents in <span class="typewriter-text" id="typewriter"></span><span class="cursor">|</span></div>
+        <div class="language-row">ENGLISH &middot; हिंदी &middot; मराठी &middot; தமிழ் &middot; తెలుగు &middot; বাংলা</div>
+    </div>
+    
+    <!-- Flowise Component -->
+    <flowise-fullpagechat></flowise-fullpagechat>
+
+    <!-- Floating Mic Component -->
+    <div id="mic-container">
+        <span id="mic-status"></span>
+        <button id="mic-btn" title="Click to dictate">🎙️</button>
+    </div>
+
+    <!-- Typewriter Animation Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const languages = ["English", "Hindi", "Marathi", "Punjabi", "Gujarati", "Tamil", "Telugu", "Bengali"];
+            const typewriterElement = document.getElementById("typewriter");
+            
+            let languageIndex = 0;
+            let charIndex = 0;
+            let isDeleting = false;
+            let typeSpeed = 100;
+
+            function typeWriter() {
+                const currentLanguage = languages[languageIndex];
+                
+                if (isDeleting) {
+                    typewriterElement.textContent = currentLanguage.substring(0, charIndex - 1);
+                    charIndex--;
+                    typeSpeed = 50; 
+                } else {
+                    typewriterElement.textContent = currentLanguage.substring(0, charIndex + 1);
+                    charIndex++;
+                    typeSpeed = 120; 
+                }
+
+                if (!isDeleting && charIndex === currentLanguage.length) {
+                    isDeleting = true;
+                    typeSpeed = 1800; // Pause longer when word is complete
+                } 
+                else if (isDeleting && charIndex === 0) {
+                    isDeleting = false;
+                    languageIndex = (languageIndex + 1) % languages.length; 
+                    typeSpeed = 500; 
+                }
+
+                setTimeout(typeWriter, typeSpeed);
+            }
+
+            setTimeout(typeWriter, 800);
+        });
+    </script>
+
+    <!-- Flowise Initialization -->
+    <script type="module">
+        import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+
+        fetch('/api/config')
+            .then(response => response.json())
+            .then(config => {
+                const getThemeConfig = () => ({
+                    chatflowid: config.chatflowId, 
+                    apiHost: config.apiHost,       
+                    theme: {
+                        customCSS: `
+                            /* Completely kill the blue background and shadow on the header */
+                            .bg-blue-500, header, .flex.w-full.h-16 {
+                                background-color: transparent !important;
+                                background: transparent !important;
+                                box-shadow: none !important;
+                                border: none !important;
+                            }
+                            
+                            /* Turn the white refresh/clear icon into your teal green */
+                            button svg, svg.text-white {
+                                color: #199573 !important;
+                                stroke: #199573 !important;
+                            }
+                            
+                            /* AGGRESSIVELY HIDE the entire "Powered by Flowise" sentence */
+                            span:has(a[href*="flowiseai"]), 
+                            .text-center.text-xs, 
+                            span.text-xs {
+                                display: none !important;
+                                color: transparent !important;
+                                visibility: hidden !important;
+                                opacity: 0 !important;
+                                height: 0 !important;
+                                margin: 0 !important;
+                                padding: 0 !important;
+                            }
+                        `,
+                        chatWindow: {
+                            titleBackgroundColor: "transparent", 
+                            backgroundColor: "transparent",      
+                            titleColor: "#333333",
+                            showPoweredBy: false, 
+                            welcomeMessage: "Upload a document to begin analysis. \n\nTap the microphone to speak in English or your regional language.",
+                            botMessage: {
+                                backgroundColor: "#ffffff",
+                                textColor: "#333333",
+                                showAvatar: true,
+                            },
+                            userMessage: {
+                                backgroundColor: "#199573", 
+                                textColor: "#ffffff",
+                                showAvatar: false,
+                            },
+                            textInput: {
+                                placeholder: "Message or dictate...",
+                                backgroundColor: "#ffffff",
+                                textColor: "#333333",
+                                sendButtonColor: "#199573",
+                            },
+                            uploads: {
+                                allowFiles: true,
+                                maxFileSize: 2,
+                                accept: ".pdf,.txt,.docx,.csv"
+                            }
+                        }
+                    }
+                });
+
+                Chatbot.initFull(getThemeConfig());
+            })
+            .catch(err => console.error("Failed to load bot config:", err));
+    </script>
+
+    <!-- Microphone Recording and STT Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const micBtn = document.getElementById('mic-btn');
+            const micStatus = document.getElementById('mic-status');
+            
+            let isRecording = false;
+            let mediaRecorder;
+            let audioChunks = [];
+
+            micBtn.addEventListener('click', async () => {
+                if (!isRecording) {
+                    await startRecording();
+                } else {
+                    stopRecording();
+                }
+            });
+
+            async function startRecording() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    const options = MediaRecorder.isTypeSupported('audio/webm') ? { mimeType: 'audio/webm' } : {};
+                    mediaRecorder = new MediaRecorder(stream, options);
+                    audioChunks = [];
+
+                    mediaRecorder.ondataavailable = (event) => {
+                        if (event.data.size > 0) audioChunks.push(event.data);
+                    };
+
+                    mediaRecorder.onstop = async () => {
+                        const mimeType = mediaRecorder.mimeType || 'audio/webm';
+                        const audioBlob = new Blob(audioChunks, { type: mimeType });
+                        await sendAudioToBackend(audioBlob);
+                    };
+
+                    mediaRecorder.start();
+                    isRecording = true;
+                    
+                    micBtn.classList.add('recording');
+                    micStatus.style.display = 'block';
+                    micStatus.textContent = "Listening...";
+                } catch (err) {
+                    console.error("Mic Error:", err);
+                    micStatus.style.display = 'block';
+                    micStatus.textContent = "Mic permission denied.";
+                    setTimeout(() => { micStatus.style.display = 'none'; }, 3000);
+                }
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                    mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    isRecording = false;
+                    
+                    micBtn.classList.remove('recording');
+                    micStatus.textContent = "Processing audio...";
+                }
+            }
+
+            async function sendAudioToBackend(blob) {
+                const formData = new FormData();
+                formData.append('file', blob, 'recording.webm');
+
+                try {
+                    micStatus.textContent = "Transcribing...";
+                    
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+                    const response = await fetch('/v1/audio/transcriptions', {
+                        method: 'POST',
+                        body: formData,
+                        signal: controller.signal
+                    });
+                    
+                    clearTimeout(timeoutId);
+
+                    const contentType = response.headers.get("content-type");
+                    if (!contentType || !contentType.includes("application/json")) {
+                        throw new Error("Server crashed or returned invalid format.");
+                    }
+
+                    const data = await response.json();
+                    
+                    if (data.text) {
+                        micStatus.style.display = 'none';
+                        injectTextIntoFlowise(data.text);
+                    } else {
+                        throw new Error(data.error || "Empty response.");
+                    }
+                } catch (err) {
+                    console.error("API Error:", err);
+                    micStatus.textContent = "Error: " + err.message; 
+                    setTimeout(() => { micStatus.style.display = 'none'; }, 5000);
+                }
+            }
+
+            function injectTextIntoFlowise(text) {
+                try {
+                    function findInputBox(rootNode) {
+                        let box = rootNode.querySelector('textarea');
+                        if (box) return box;
+                        const allElements = rootNode.querySelectorAll('*');
+                        for (let el of allElements) {
+                            if (el.shadowRoot) {
+                                let found = findInputBox(el.shadowRoot);
+                                if (found) return found;
+                            }
+                        }
+                        return null; 
+                    }
+
+                    const textarea = findInputBox(document);
+
+                    if (textarea) {
+                        textarea.focus();
+                        const textToInsert = textarea.value.length > 0 ? " " + text : text;
+                        
+                        const success = document.execCommand('insertText', false, textToInsert);
+                        
+                        if (!success) {
+                            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLTextAreaElement.prototype, "value").set;
+                            nativeInputValueSetter.call(textarea, textarea.value + textToInsert);
+                            textarea.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+                            textarea.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+                        }
+                    } else {
+                        throw new Error("Text box is hidden.");
+                    }
+                } catch (err) {
+                    console.error("Injection error:", err);
+                    alert("Failed to inject text: " + err.message);
+                }
+            }
+        });
+    </script>
+    <div style="position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #7a8288; z-index: 9999; font-family: 'Inter', sans-serif; opacity: 0.7;">
+        Designed & Developed by Aaryan Gupta
+    </div>
+</body>
+</html>
