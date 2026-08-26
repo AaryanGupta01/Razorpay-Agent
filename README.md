@@ -1,57 +1,67 @@
-# 📊 RAG Document Analyzer & Assistant
+# 🚀 Razorpay Agentic Commerce Pipeline
 
-A responsive, full-page AI Assistant built using **Flowise**, **Pinecone Vector Database**, and **Flask**. This tool allows users to dynamically upload documents (PDFs, TXT, DOCX, CSV) directly through a web interface, vectors them using **Google Gemini Embeddings**, and provides real-time intelligent analysis and summarization using **Mistral AI** via a custom-designed Conversational RAG pipeline.
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Available-00E676?style=for-the-badge)](https://razorpay-agent-5h5z.onrender.com/)
+[![Tech Stack](https://img.shields.io/badge/Python-Flask-3366FF?style=for-the-badge&logo=python&logoColor=white)]()
+[![Tech Stack](https://img.shields.io/badge/Flowise-LLM_Orchestration-8B5CF6?style=for-the-badge)]()
 
-🔗 **Live Demo:** [rag-document-analyzer-4ox8.onrender.com](https://rag-document-analyzer-4ox8.onrender.com/)
+**Live Application:** [https://razorpay-agent-5h5z.onrender.com/](https://razorpay-agent-5h5z.onrender.com/)
 
----
+## 📌 Overview
+This project is a full-stack, voice-activated AI financial support engineer designed to solve two critical pain points for Tier-2 and Tier-3 merchants in India: tracking failed payments and decoding complex financial documents (like MDR tax invoices and Settlement reports) despite language barriers.
 
-## 🚀 Key Features
+Instead of a simple chatbot, this system implements **Agentic Routing**. The AI autonomously decides whether to execute a live API action or query a vector database based on the user's intent.
 
-* **Dynamic Frontend Document Uploads:** Enabled a seamless file attachment mechanism directly within the chat window to parse user-provided files on the fly.
-* **Vectorized Document Storage:** Replaced volatile in-memory stores with **Pinecone Vector Database** using **768-dimension Cosine similarity metrics** matching `gemini-embedding-001`.
-* **Persistent User Sessions:** Automated workspace isolation by mapping dynamic frontend metadata uploads to specific conversational session IDs via a `ConversationalRetrievalQAChain`.
-* **Toggleable Dark / Light Mode Switch:** Implemented a state-management controller that destroys and remounts the hidden Shadow DOM components of the chatbot to completely change look-and-feel smoothly mid-conversation.
-* **Production Guardrails:** Configured fully decoupled client/server variable structures to isolate critical Chatflow endpoints safely away from public exposure.
+## ✨ Key Features
+*   **🎙️ Multilingual Voice Interface:** Captures audio directly from the browser and transcribes regional Indian languages (Hindi, Marathi, Tamil, etc.) to text using the **Sarvam AI (saaras:v3)** API.
+*   **⚙️ Autonomous Tool Calling:** If a user asks about a failed payment (e.g., *"9876543210 ka payment kyu fail hua?"*), the agent securely hits the Flask backend to query the live **Razorpay API**, diagnoses the exact error, and generates a payment recovery link.
+*   **📄 Document Intelligence (RAG):** Merchants can upload dense English PDFs (Tax Invoices, Settlement ledgers). The agent searches the embedded vector database and explains specific line items conversationally in the user's native language.
+*   **💻 Glassmorphic FinTech UI:** A custom, fully responsive frontend tailored to Razorpay's design system (Deep Navy, True Blue, and Success Green) with dynamic typewriter animations and custom injected CSS for the Flowise widget.
 
----
+## 🏗️ System Architecture
+1.  **Frontend:** Custom HTML/JS interface with a dedicated microphone component that securely accesses the user's local audio stream.
+2.  **Transcription Layer:** Audio chunks are sent to a Flask endpoint (`/v1/audio/transcriptions`), mapped to the Sarvam AI API for highly accurate regional speech-to-text.
+3.  **Agentic Router (Flowise):** The transcribed text is passed to a Flowise LLM Agent which acts as the brain.
+    *   *Path A (Action):* Routes to the Custom Tool hitting the Flask `/api/diagnose_and_recover` endpoint.
+    *   *Path B (Knowledge):* Routes to the Vector Store (In-Memory/Pinecone) containing document embeddings.
+4.  **Backend:** Python/Flask server deployed on Render, managing API integrations and serving the UI.
 
 ## 🛠️ Tech Stack
+*   **Backend:** Python, Flask, Razorpay Python SDK
+*   **AI/LLM:** Flowise (LangChain), Sarvam AI (Speech-to-Text), OpenAI (Embeddings/LLM)
+*   **Frontend:** HTML5, CSS3, Vanilla JavaScript, Flowise Embed API
+*   **Deployment:** Render (Cloud Hosting)
 
-* **Frontend UI:** Vanilla HTML5, Advanced CSS3 Transitions, JavaScript (ES6+ Module Imports)
-* **Backend Interface:** Python, Flask, Gunicorn (WSGI Production Server)
-* **Orchestration & RAG Canvas:** Flowise AI
-* **Vector DB:** Pinecone (Serverless)
-* **Models Utilized:** * *Embeddings:* Google Gemini (`gemini-embedding-001`)
-    * *LLM:* Mistral AI (`mistral-tiny`)
+## 🚀 Local Setup & Installation
 
----
-
-## 📁 Repository Structure
-
-├── app.py                 # Core Flask backend application & configurations route
-├── templates/
-│   └── index.html         # Full-page frontend interface & custom UI toggle handler
-├── requirements.txt       # Production dependencies for web server deployment
-├── .gitignore             # Strict staging blocks to avoid private tracking leaks
-└── README.md              # Project roadmap & structural documentation
-
-1. Clone the Workspace
-Bash
-
-git clone [https://github.com/your-username/rag-document-analyzer.git](https://github.com/your-username/rag-document-analyzer.git)
-cd rag-document-analyzer
-
-2. Set Up Your Python Environment
-Bash
+**1. Clone the repository**
+```bash
+git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+cd your-repo-name
 
 python -m venv venv
-source venv/bin/activate  # On Windows use: venv\Scripts\activate
+source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+
 pip install -r requirements.txt
 
-3. Launch the App Locally
-Bash
+RAZORPAY_KEY_ID=your_test_key_id
+RAZORPAY_KEY_SECRET=your_test_key_secret
+SARVAM_API_KEY=your_sarvam_key
 
 flask run
+```
+## 💡 Usage Example
 
-Your local server will boot at http://127.0.0.1:5000/.
+Scenario 1: Live API Recovery
+
+Action: Click the mic and dictate: "Check the payment status for 9876543210"
+
+Result: The agent fetches the live Razorpay diagnostic, explains the failure reason (e.g., CVV mismatch), and provides a recovery payment link.
+
+Scenario 2: Multilingual Document Q&A
+
+Action: Upload an English "MDR & Tax Invoice" PDF.
+Action: Click the mic and dictate in Hindi: "Mera is mahine ka platform fee kitna laga hai?"
+
+Result: The agent retrieves the specific chunk from the vector database and replies accurately in Hindi.
+
+Designed & Developed by Aaryan Gupta
